@@ -2,6 +2,7 @@
 Creates text fingerprints
 """
 
+import sys
 import typing
 
 import mmh3
@@ -32,8 +33,14 @@ def winnow(window: typing.List[typing.Tuple[int, str]]
     """Winnows ngram windows by selecting the minimum hash in each
     """
 
-    # select the least-value hash in the window
-    return min(window, key=lambda w: w[1])
+    least_value = (None, float('inf'))
+
+    # select the right-most least-value hash in the window
+    for value in window:
+        if value[1] <= least_value[1]:
+            least_value = value
+
+    return least_value
 
 
 def fingerprint_text(
