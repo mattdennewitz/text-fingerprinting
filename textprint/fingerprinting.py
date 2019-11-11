@@ -23,8 +23,8 @@ def window_ngrams(ngram_hashes: typing.List[typing.Tuple[int, str]],
     """Creates windows of sequential ngrams of size <window_size>
     """
 
-    for i in range(len(ngrams) - window_size + 1):
-        yield ngrams[i:i + window_size]
+    for i in range(0, len(ngram_hashes) - window_size + 1, window_size):
+        yield ngram_hashes[i:i + window_size]
 
 
 def winnow(window: typing.List[typing.Tuple[int, str]]
