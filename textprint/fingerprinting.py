@@ -10,12 +10,10 @@ import mmh3
 from .processing import prepare_text_for_grams, split_text_into_grams
 
 
-def hash_ngram(ngram: typing.Tuple[int, str]) -> typing.Tuple[int, str]:
+def hash_ngram(ngram: str) -> int:
     """Hashes given text using mmh3"""
 
-    hashed_text = mmh3.hash(ngram[1])
-
-    return (ngram[0], hashed_text)
+    return mmh3.hash(ngram[1])
 
 
 def cull_ngrams(
@@ -43,7 +41,9 @@ def window_ngrams(
         yield hashes_with_pos[i : i + window_size]
 
 
-def winnow(windows: typing.List[typing.Tuple[int, str]]) -> typing.Tuple[int, str]:
+def winnow(
+    windows: typing.List[typing.Tuple[int, str]]
+) -> typing.Generator[typing.Tuple[int, str], None, None]:
     """Winnows ngram windows by selecting the minimum hash in each"""
 
     previous_least_hash = None
@@ -66,7 +66,7 @@ def fingerprint_text(
     ngram_size: int = 5,
     cull_modulo: int = 1,  # modulo for culling ngrams (to reduce doc density)
     window_size: int = 4,
-) -> typing.List[typing.Tuple[int, str]]:
+) -> typing.Set[typing.Tuple[int, str]]:
     """Fingerprints given text"""
 
     prepared_text = prepare_text_for_grams(text)
@@ -87,4 +87,4 @@ def fingerprint_text(
     # select fingerprints from windows
     fingerprints = winnow(windows)
 
-    return fingerprints
+    return set(fingerprints)

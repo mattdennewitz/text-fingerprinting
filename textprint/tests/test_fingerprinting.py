@@ -10,10 +10,10 @@ from ..fingerprinting import cull_ngrams, hash_ngram, window_ngrams, winnow
 def test_ngram_hashing():
     """Hashing should hash the string in a (pos, ngram) pair"""
 
-    value = (1, "this")
+    value = "this"
     hashed_str = mmh3.hash("this")
 
-    assert hash_ngram(value) == (1, hashed_str)
+    assert value == hashed_str
 
 
 def test_cull_ngrams():
