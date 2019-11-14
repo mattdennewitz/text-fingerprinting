@@ -11,19 +11,28 @@ from .processing import prepare_text_for_grams, split_text_into_grams
 
 
 def hash_ngram(ngram: typing.Tuple[int, str]) -> typing.Tuple[int, str]:
-    """Hashes given text using mmh3
-    """
+    """Hashes given text using mmh3"""
 
     hashed_text = mmh3.hash(ngram[1])
 
     return (ngram[0], hashed_text)
 
 
+def cull_ngrams(
+    ngrams: typing.List[typing.Any], modulo: int = 1
+) -> typing.List[typing.Any]:
+    """Culls ngrams using modulo comparison against an item's position"""
+
+    if modulo == 0:
+        return []
+
+    return [ngram for (i, ngram) in enumerate(ngrams) if i % modulo == 0]
+
+
 def window_ngrams(
     ngram_hashes: typing.List[str], window_size: int = 4
 ) -> typing.Generator[typing.Tuple[int, str], None, None]:
-    """Creates windows of sequential ngrams of size <window_size>
-    """
+    """Creates windows of sequential ngrams of size <window_size>"""
 
     # inject hash position
     hashes_with_pos = [
@@ -35,8 +44,7 @@ def window_ngrams(
 
 
 def winnow(windows: typing.List[typing.Tuple[int, str]]) -> typing.Tuple[int, str]:
-    """Winnows ngram windows by selecting the minimum hash in each
-    """
+    """Winnows ngram windows by selecting the minimum hash in each"""
 
     previous_least_hash = None
 
@@ -56,22 +64,19 @@ def winnow(windows: typing.List[typing.Tuple[int, str]]) -> typing.Tuple[int, st
 def fingerprint_text(
     text: str,
     ngram_size: int = 5,
-    ngram_retention: float = 1.0,  # 1.0 = 100% retention, 0.25 = 25%, ...
+    cull_modulo: int = 1,  # modulo for culling ngrams (to reduce doc density)
     window_size: int = 4,
-) -> typing.Set[typing.Tuple[int, str]]:
-    """Fingerprints given text
-    """
+) -> typing.List[typing.Tuple[int, str]]:
+    """Fingerprints given text"""
 
-    retainer = 1 / ngram_retention
-
-    prepared_text: typing.List[typing.Tuple(int, str)] = prepare_text_for_grams(text)
+    prepared_text = prepare_text_for_grams(text)
 
     # split prepared text into a sequence of ngrams and their start positions
     # in the source prepared text
-    ngrams = list(split_text_into_grams(prepared_text))
+    ngrams = split_text_into_grams(prepared_text)
 
     # cull ngrams by scaling factor ngram_retention
-    ngrams = [ngram for (i, ngram) in enumerate(ngrams) if i % retainer == 0]
+    ngrams = cull_ngrams(ngrams, modulo=cull_modulo)
 
     # hash each ngram
     ngram_hashes = map(hash_ngram, ngrams)

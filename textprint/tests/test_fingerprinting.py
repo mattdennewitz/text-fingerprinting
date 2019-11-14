@@ -4,7 +4,7 @@ Tests fingerprinting text
 
 import mmh3
 
-from ..fingerprinting import hash_ngram, window_ngrams, winnow
+from ..fingerprinting import cull_ngrams, hash_ngram, window_ngrams, winnow
 
 
 def test_ngram_hashing():
@@ -14,6 +14,16 @@ def test_ngram_hashing():
     hashed_str = mmh3.hash("this")
 
     assert hash_ngram(value) == (1, hashed_str)
+
+
+def test_cull_ngrams():
+    """Culling should return only a subset of a sequence"""
+
+    value = range(10)
+
+    assert list(cull_ngrams(range(10), 0)) == []
+    assert list(cull_ngrams(range(10), 1)) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert list(cull_ngrams(range(10), 4)) == [0, 4, 8]
 
 
 def test_windowing():
@@ -39,4 +49,3 @@ def test_winnowing():
     winnowed_ngrams = list(winnow(windows))
 
     assert winnowed_ngrams == [(3, 17), (6, 17), (8, 8), (11, 39), (15, 17)]
-
