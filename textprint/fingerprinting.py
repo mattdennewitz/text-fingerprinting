@@ -7,7 +7,7 @@ import typing
 
 import mmh3
 
-from .processing import prepare_text_for_grams, split_text_into_grams
+from .processing import create_ngrams
 
 
 def hash_ngram(ngram: str) -> int:
@@ -69,11 +69,9 @@ def fingerprint_text(
 ) -> typing.Set[typing.Tuple[int, str]]:
     """Fingerprints given text"""
 
-    prepared_text = prepare_text_for_grams(text)
-
     # split prepared text into a sequence of ngrams and their start positions
     # in the source prepared text
-    ngrams = split_text_into_grams(prepared_text, ngram_size=ngram_size)
+    ngrams = create_ngrams(text, ngram_size=ngram_size)
 
     # cull ngrams by scaling factor ngram_retention
     ngrams = cull_ngrams(ngrams, modulo=cull_modulo)

@@ -2,23 +2,37 @@
 Tests text processing
 """
 
-from ..processing import prepare_text_for_grams, split_text_into_grams
+from ..processing import collapse_text, sanitize_text, create_ngrams
 
 
-def test_preparation_lowers():
-    """Preparation should convert text to lowercase"""
+def test_sanitization():
+    """Sanitization should stem, remove punctuation, and remove stopwords"""
 
-    assert prepare_text_for_grams("Testing") == "testing"
+    text = "i enjoy volcanoes and volcanic activities"
+    assert sanitize_text(text) == "enjoy volcano volcan activ"
 
 
-def test_whitespace_removed():
-    """Preparation should remove whitespace"""
+def test_sanitization_transliteration():
+    """Sanitization transliterates special chars to ASCII"""
 
-    assert prepare_text_for_grams("Testing ") == "testing"
-    assert prepare_text_for_grams(" testing") == "testing"
-    assert prepare_text_for_grams("this is a test") == "thisisatest"
+    text = "I am sometimes not sure of what to make of Björk"
+    assert sanitize_text(text) == "I sometim sure make bjork"
+
+
+def test_collapse_lowers():
+    """Collapsing text should cast to lowercase"""
+
+    assert collapse_text("Testing") == "testing"
+
+
+def test_collapse_removes_whitespace():
+    """Collapsing text should remove whitespace"""
+
+    assert collapse_text("Testing ") == "testing"
+    assert collapse_text(" testing") == "testing"
+    assert collapse_text("this is a test") == "thisisatest"
     assert (
-        prepare_text_for_grams(
+        collapse_text(
             """
     testing"""
         )
@@ -26,17 +40,17 @@ def test_whitespace_removed():
     )
 
 
-def test_preparation_removes_non_alpha_chars():
+def test_collapse_removes_non_alpha_chars():
     """Preparation should remove non-alpha chars"""
 
-    assert prepare_text_for_grams("Testing - 123") == "testing123"
+    assert collapse_text("Testing - 123") == "testing123"
 
 
 def test_splitting_ngrams():
     """Splitting should chunk text"""
 
     text = "thisisjustamodernrocksong"
-    chunked = split_text_into_grams(text, 4)
+    chunked = create_ngrams(text, 4)
 
     chunked = list(chunked)
 
