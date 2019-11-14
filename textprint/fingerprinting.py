@@ -73,7 +73,7 @@ def fingerprint_text(
 
     # split prepared text into a sequence of ngrams and their start positions
     # in the source prepared text
-    ngrams = split_text_into_grams(prepared_text)
+    ngrams = split_text_into_grams(prepared_text, ngram_size=ngram_size)
 
     # cull ngrams by scaling factor ngram_retention
     ngrams = cull_ngrams(ngrams, modulo=cull_modulo)
@@ -82,7 +82,7 @@ def fingerprint_text(
     ngram_hashes = map(hash_ngram, ngrams)
 
     # window fingerprints for min hash selection
-    windows = window_ngrams(ngram_hashes, window_size)
+    windows = window_ngrams(ngram_hashes, window_size=window_size)
 
     # select fingerprints from windows
     fingerprints = winnow(windows)
