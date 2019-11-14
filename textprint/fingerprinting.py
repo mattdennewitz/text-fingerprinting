@@ -20,27 +20,37 @@ def hash_ngram(ngram: typing.Tuple[int, str]) -> typing.Tuple[int, str]:
 
 
 def window_ngrams(
-    ngram_hashes: typing.List[typing.Tuple[int, str]], window_size: int = 4
-) -> typing.List[typing.Tuple[int, str]]:
+    ngram_hashes: typing.List[str], window_size: int = 4
+) -> typing.Generator[typing.Tuple[int, str], None, None]:
     """Creates windows of sequential ngrams of size <window_size>
     """
 
-    for i in range(0, len(ngram_hashes) - window_size + 1, window_size):
-        yield ngram_hashes[i : i + window_size]
+    # inject hash position
+    hashes_with_pos = [
+        (pos, ngram_hash) for (pos, ngram_hash) in enumerate(ngram_hashes)
+    ]
+
+    for i in range(0, len(hashes_with_pos) - window_size + 1):
+        yield hashes_with_pos[i : i + window_size]
 
 
-def winnow(window: typing.List[typing.Tuple[int, str]]) -> typing.Tuple[int, str]:
+def winnow(windows: typing.List[typing.Tuple[int, str]]) -> typing.Tuple[int, str]:
     """Winnows ngram windows by selecting the minimum hash in each
     """
 
-    least_value = (None, float("inf"))
+    previous_least_hash = None
 
-    # select the right-most least-value hash in the window
-    for value in window:
-        if value[1] <= least_value[1]:
-            least_value = value
+    for window in windows:
+        least_value = (None, float("inf"))
 
-    return least_value
+        # select the right-most least-value hash in the window
+        for value in window:
+            if value[1] <= least_value[1]:
+                least_value = value
+
+        if least_value[0] is not None and least_value != previous_least_hash:
+            previous_least_hash = least_value
+            yield least_value
 
 
 def fingerprint_text(
@@ -63,13 +73,13 @@ def fingerprint_text(
     # cull ngrams by scaling factor ngram_retention
     ngrams = [ngram for (i, ngram) in enumerate(ngrams) if i % retainer == 0]
 
-    # hash each ngram, and include each position - this is the foundation of a fingerprint
-    ngram_hashes = [(i, hash_ngram(ngram)) for (i, ngram) in enumerate(ngrams)]
+    # hash each ngram
+    ngram_hashes = map(hash_ngram, ngrams)
 
     # window fingerprints for min hash selection
     windows = window_ngrams(ngram_hashes, window_size)
 
     # select fingerprints from windows
-    fingerprint = set(map(winnow, windows))
+    fingerprints = winnow(windows)
 
-    return fingerprint
+    return fingerprints

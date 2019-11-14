@@ -19,18 +19,24 @@ def test_ngram_hashing():
 def test_windowing():
     """Windowing should split a sequence into sub-groups of N size"""
 
-    ngram_hashes = [(i, i) for i in range(9)]
-    windows = list(window_ngrams(ngram_hashes))
+    ngram_hashes = [0, 1, 2, 1]
+    windowed = window_ngrams(ngram_hashes, window_size=2)
 
-    assert len(windows) == 2
-    assert windows[0] == [(i, i) for i in range(0, 4)]
-    assert windows[1] == [(i, i) for i in range(4, 8)]
+    assert list(windowed) == [
+        [(0, 0), (1, 1)],
+        [(1, 1), (2, 2)],
+        [(2, 2), (3, 1)],
+    ]
 
 
 def test_winnowing():
     """Winnowing selects the right-most least value"""
 
-    windows = [[(0, 1), (1, 2), (3, 3), (4, 1)], [(5, 3), (6, 4), (7, 5), (8, 6)]]
+    windows = window_ngrams(
+        [77, 74, 42, 17, 98, 50, 17, 98, 8, 88, 67, 39, 77, 74, 42, 17, 98]
+    )
 
-    assert winnow(windows[0]) == (4, 1)
-    assert winnow(windows[1]) == (5, 3)
+    winnowed_ngrams = list(winnow(windows))
+
+    assert winnowed_ngrams == [(3, 17), (6, 17), (8, 8), (11, 39), (15, 17)]
+
