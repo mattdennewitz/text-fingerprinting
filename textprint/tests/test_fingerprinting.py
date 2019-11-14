@@ -13,7 +13,7 @@ def test_ngram_hashing():
     value = "this"
     hashed_str = mmh3.hash("this")
 
-    assert value == hashed_str
+    assert hash_ngram(value) == hashed_str
 
 
 def test_cull_ngrams():

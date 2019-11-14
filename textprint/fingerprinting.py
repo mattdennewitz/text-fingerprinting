@@ -13,7 +13,7 @@ from .processing import prepare_text_for_grams, split_text_into_grams
 def hash_ngram(ngram: str) -> int:
     """Hashes given text using mmh3"""
 
-    return mmh3.hash(ngram[1])
+    return mmh3.hash(ngram)
 
 
 def cull_ngrams(
