@@ -10,8 +10,8 @@ from ..fingerprinting import hash_ngram, window_ngrams, winnow
 def test_ngram_hashing():
     """Hashing should hash the string in a (pos, ngram) pair"""
 
-    value = (1, 'this')
-    hashed_str = mmh3.hash('this')
+    value = (1, "this")
+    hashed_str = mmh3.hash("this")
 
     assert hash_ngram(value) == (1, hashed_str)
 
@@ -30,8 +30,7 @@ def test_windowing():
 def test_winnowing():
     """Winnowing selects the right-most least value"""
 
-    windows = [[(0, 1), (1, 2), (3, 3), (4, 1)],
-               [(5, 3), (6, 4), (7, 5), (8, 6)]]
+    windows = [[(0, 1), (1, 2), (3, 3), (4, 1)], [(5, 3), (6, 4), (7, 5), (8, 6)]]
 
     assert winnow(windows[0]) == (4, 1)
     assert winnow(windows[1]) == (5, 3)

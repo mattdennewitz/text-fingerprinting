@@ -8,7 +8,7 @@ import typing
 
 from unidecode import unidecode
 
-NON_ALPHA_RE = re.compile(r'[\W_]+', flags=re.UNICODE)
+NON_ALPHA_RE = re.compile(r"[\W_]+", flags=re.UNICODE)
 
 
 def prepare_text_for_grams(text: str) -> str:
@@ -29,13 +29,14 @@ def prepare_text_for_grams(text: str) -> str:
     text = text.lower()
 
     # remove whitespace
-    text = NON_ALPHA_RE.sub('', text)
+    text = NON_ALPHA_RE.sub("", text)
 
     return text
 
 
-def split_text_into_grams(text: str, ngram_size: int = 5
-                          ) -> typing.Generator[str, None, None]:
+def split_text_into_grams(
+    text: str, ngram_size: int = 5
+) -> typing.Generator[str, None, None]:
     """Splits text into windows of <ngram_size> length
 
     In: thisisjustamodernrocksong, ngram size of 4
@@ -46,4 +47,4 @@ def split_text_into_grams(text: str, ngram_size: int = 5
 
     for i in range(gram_blocks):
         offset = ngram_size * i
-        yield text[offset:(offset + ngram_size)]
+        yield text[offset : (offset + ngram_size)]
