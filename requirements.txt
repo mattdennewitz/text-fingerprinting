@@ -9,7 +9,7 @@ more-itertools==7.2.0
 packaging==19.2
 pathspec==0.6.0
 pluggy==0.13.0
-py==1.8.0
+py==1.10.0
 pyparsing==2.4.5
 pytest==5.2.2
 regex==2019.11.1
